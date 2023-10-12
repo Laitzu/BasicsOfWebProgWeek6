@@ -117,8 +117,8 @@ async function fetchData(name) {
                     "filter": "item",
                     "values": [
                         "vaesto",
-                        "vm01",
-                        "vm11"
+                        /*"vm01",
+                        "vm11"*/
                     ]
                 }
             }
@@ -138,7 +138,7 @@ async function fetchData(name) {
         method: "POST",
         body: JSON.stringify(query)
     })
-    
+
     if(!res2.ok) {
         return;
     }
@@ -158,11 +158,12 @@ async function createChart(name) {
     }
 
     const years = Object.values(data.dimension.Vuosi.category.label);
-    let population = [];
+    let population = data.value;
+    /*let population = [];
     for(let i = 2; i < data.value.length; i++) {
         population.push(data.value[i])
         i = i + 2
-    }
+    }*/
 
     let sum = 0;
     for(let i = 1; i < population.length; i++) {
