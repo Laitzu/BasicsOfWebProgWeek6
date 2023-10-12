@@ -1,0 +1,65 @@
+<html>
+<body onload="receiveData()">
+<head>
+
+    <script src="https://unpkg.com/frappe-charts@latest"></script>
+    
+</head>
+
+    <div id="chart"></div>
+    <button id="navigation" onclick="changePage()">Return to population data</button>
+
+</body>
+</html>
+
+<script>
+
+function receiveData() {
+    let data = JSON.parse(localStorage.getItem("dataStorage"));
+    let name = localStorage.getItem("nameStorage");
+
+    let years = Object.values(data.dimension.Vuosi.category.label);
+    let births = [];
+    let deaths = [];
+
+    for(let i = 0; i < data.value.length; i++) {
+        births.push(data.value[i])
+        i = i + 2
+    }
+    for(let i = 1; i < data.value.length; i++) {
+        deaths.push(data.value[i])
+        i = i + 2
+    }
+
+    createChart()
+    function createChart() {
+
+        let chart = new frappe.Chart("#chart", { // or DOM element
+            data: {
+            labels: years,
+            datasets: [
+                    {
+                        name: "Births", chartType: 'bar',
+                        values: births
+                    },
+                    {
+                        name: "Deaths", chartType: 'bar',
+                        values: deaths
+                    }
+            ],
+            },
+            title: ("Birth and Death data of " + name),
+            type: 'bar', // or 'bar', 'line', 'pie', 'percentage'
+            height: 450,
+            colors: ['#63d0ff', '#363636']
+        })
+    }
+}
+
+
+function changePage() {
+    window.location.href = "index.html";
+}
+
+
+</script>
