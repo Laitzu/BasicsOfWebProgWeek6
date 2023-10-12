@@ -107,7 +107,8 @@ async function fetchData(name) {
                 "selection": {
                     "filter": "item",
                     "values": [
-                        areaCode
+                        "SSS"
+                        /*areaCode*/
                     ]
                 }
             },
@@ -142,7 +143,7 @@ async function fetchData(name) {
     if(!res2.ok) {
         return;
     }
-
+    console.log(query)
     const data = await res2.json();
 
     return data
