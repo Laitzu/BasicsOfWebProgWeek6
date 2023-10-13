@@ -127,6 +127,8 @@ async function fetchData() {
     let births = [];
     let deaths = [];
 
+    console.log(data.value)
+
     for(let i = 0; i < data.value.length; i++) {
         births.push(data.value[i])
         i = i + 1
@@ -136,6 +138,8 @@ async function fetchData() {
         i = i + 1
     }
 
+    console.log(births)
+    console.log(deaths)
 
 
     createChart()
@@ -157,7 +161,7 @@ async function fetchData() {
             },
             title: ("Birth and Death data of " + name),
             type: 'bar', // or 'bar', 'line', 'pie', 'percentage'
-            height: 450,
+            height: 454,
             colors: ['#63d0ff', '#363636']
         })
     }
