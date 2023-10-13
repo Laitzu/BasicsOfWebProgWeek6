@@ -136,6 +136,7 @@ async function fetchData(name) {
 
     const res2 = await fetch(url2, {
         method: "POST",
+        headers: { "content-type": "application/json" },
         body: JSON.stringify(query)
     })
 
@@ -143,9 +144,7 @@ async function fetchData(name) {
         return;
     }
     const data = await res2.json();
-
     return data
-
 }
 
 async function createChart(name) {
