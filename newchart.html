@@ -1,5 +1,5 @@
 <html>
-<body onload="receiveData()">
+<body onload="fetchData()">
 <head>
 
     <script src="https://unpkg.com/frappe-charts@latest"></script>
@@ -14,9 +14,114 @@
 
 <script>
 
-function receiveData() {
-    let data = JSON.parse(localStorage.getItem("dataStorage"));
+async function fetchData() {
+
     let name = localStorage.getItem("nameStorage");
+    let areaCode = "SSS";
+
+    const url = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px";
+
+    const res = await fetch(url)
+
+    if(!res.ok) {
+        return;
+    }
+
+    const muniData = await res.json();
+
+    const muniNames = muniData.variables[1].valueTexts;
+    const muniCodes = muniData.variables[1].values;
+
+    municipalities = []
+    muniNames.forEach((municipality, index) => {
+        municipalities[index] = {
+            name: muniNames[index],
+            code: muniCodes[index]
+        }
+    })
+
+    if(name) {
+        for(let i = 0; i < municipalities.length; i++) {
+            if(municipalities[i].name == name) {
+                areaCode = municipalities[i].code;
+            }
+        }
+    }
+
+    const query = ({
+        "query": [
+            {
+                "code": "Vuosi",
+                "selection": {
+                    "filter": "item",
+                    "values": [
+                        "2000",
+                        "2001",
+                        "2002",
+                        "2003",
+                        "2004",
+                        "2005",
+                        "2006",
+                        "2007",
+                        "2008",
+                        "2009",
+                        "2010",
+                        "2011",
+                        "2012",
+                        "2013",
+                        "2014",
+                        "2015",
+                        "2016",
+                        "2017",
+                        "2018",
+                        "2019",
+                        "2020",
+                        "2021"
+                    ]
+                }
+            },
+            {
+                "code": "Alue",
+                "selection": {
+                    "filter": "item",
+                    "values": [
+                        areaCode
+                    ]
+                }
+            },
+            {
+                "code": "Tiedot",
+                "selection": {
+                    "filter": "item",
+                    "values": [
+                        "vm01",
+                        "vm11"
+                    ]
+                }
+            }
+        ],
+        "response": {
+            "format": "json-stat2"
+        }
+    })
+
+
+
+
+
+    const url2 = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px";
+
+    const res2 = await fetch(url2, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(query)
+    })
+
+    if(!res2.ok) {
+        return;
+    }
+    const data = await res2.json();
+    
 
     let years = Object.values(data.dimension.Vuosi.category.label);
     let births = [];
@@ -24,12 +129,14 @@ function receiveData() {
 
     for(let i = 0; i < data.value.length; i++) {
         births.push(data.value[i])
-        i = i + 2
+        i = i + 1
     }
     for(let i = 1; i < data.value.length; i++) {
         deaths.push(data.value[i])
-        i = i + 2
+        i = i + 1
     }
+
+
 
     createChart()
     function createChart() {

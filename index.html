@@ -36,6 +36,8 @@ async function fetchData(name) {
 
     if(name) {
         areaCode = name;
+    } else {
+        name = "WHOLE COUNTRY"
     }
 
     const url = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px";
@@ -62,8 +64,7 @@ async function fetchData(name) {
     if(name) {
         for(let i = 0; i < municipalities.length; i++) {
             if(municipalities[i].name == name) {
-                name = municipalities[i].code;
-                areaCode = name;
+                areaCode = municipalities[i].code;
             }
         }
     }
@@ -117,8 +118,6 @@ async function fetchData(name) {
                     "filter": "item",
                     "values": [
                         "vaesto",
-                        "vm01",
-                        "vm11"
                     ]
                 }
             }
@@ -128,9 +127,6 @@ async function fetchData(name) {
         }
     })
 
-
-
-  
 
     const url2 = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px";
 
@@ -144,23 +140,20 @@ async function fetchData(name) {
         return;
     }
     const data = await res2.json();
-    return data
+
+    info = [data, name]
+    return info
 }
 
 async function createChart(name) {
 
-    let data = await fetchData(name);
+    let info = await fetchData(name);
+    let data = info[0];
+    name = info[1];
 
-    if(!name) {
-        name = "Finland";
-    }
 
     const years = Object.values(data.dimension.Vuosi.category.label);
-    let population = [];
-    for(let i = 2; i < data.value.length; i++) {
-        population.push(data.value[i])
-        i = i + 2
-    }
+    let population = data.value;
 
     let sum = 0;
     for(let i = 1; i < population.length; i++) {
@@ -171,6 +164,7 @@ async function createChart(name) {
     let mean = sum/population.length;
     let index = population.length;
     let predictedData = population[index-1] + mean;
+
 
     let chart = new frappe.Chart("#chart", { // or DOM element
         data: {
@@ -207,7 +201,6 @@ async function createChart(name) {
     
     createChart.changePage = changePage;
     function changePage() {
-    localStorage.setItem("dataStorage", JSON.stringify(data))
     localStorage.setItem("nameStorage", name)
     window.location.href = "newchart.html";
     }
